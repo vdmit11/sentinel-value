@@ -13,6 +13,8 @@ Pages:
 .. toctree::
    :maxdepth: 1
 
+   sentinel_value
+
 Indices and tables
 ------------------
 
