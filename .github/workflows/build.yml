@@ -27,7 +27,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v2
         with:
-          python-version: ['3.7', '3.10']
+          python-version: '3.7 - 3.10'
       - name: Install Python packages
         run: pip install poetry python-semantic-release
       - name: Release
