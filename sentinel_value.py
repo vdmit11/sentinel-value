@@ -1,15 +1,15 @@
 from typing import Set
 
 
-class Sentinel:
+class SentinelValue:
     """A class that allows to create special marker objects.
 
     Mostly useful for distinguishing "value is not set" and "value is set to None" cases,
     as shown in this example::
 
-        >>> from sentinel_value import Sentinel
+        >>> from sentinel_value import SentinelValue
 
-        >>> NotSet = Sentinel('NotSet', __name__)
+        >>> NotSet = SentinelValue('NotSet', __name__)
 
         >>> value = getattr(object, 'some_attribute', NotSet)
         >>> if value is NotSet:
@@ -23,7 +23,9 @@ class Sentinel:
         qualified_name = module_name + "." + instance_name
 
         if qualified_name in self.registered_names:
-            raise AssertionError(f"Sentinel with name `{qualified_name}` is already registered.")
+            raise AssertionError(
+                f"SentinelValue with name `{qualified_name}` is already registered."
+            )
         self.registered_names.add(qualified_name)
 
         self.short_name = instance_name

@@ -7,4 +7,4 @@
 
    .. autosummary::
    
-      Sentinel
+      SentinelValue
