@@ -21,7 +21,7 @@ jobs:
           poetry install --no-root
       - name: Run tests
         run: |
-          pytest
+          poetry run pytest
 
   release:
     needs: tests
