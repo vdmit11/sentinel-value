@@ -39,28 +39,4 @@ class Sentinel:
 
     @staticmethod
     def __bool__():
-        """Evaluate to ``False`` when treated as boolean.
-
-        This thing allows to do ``if not`` checks on the ``MISSING`` object, like this:
-
-            >>> value = getattr(object, 'some_attribute', MISSING)
-            >>> if not value:
-            ...     print('no value')
-            no value
-        """
         return False
-
-
-class Missing(Sentinel):
-    """Class for the MISSING singleton.
-
-    Why separate class? Why just not create MISSING as instance of Sentinel()?
-
-    Because separate Missing class is required when you need dispatch by type,
-    like :func:`functools.singledispatch`.
-
-    Also, Missing class plays nice with type hinting (the :mod:`typing` module).
-    """
-
-
-MISSING = Missing(__name__, "MISSING")
