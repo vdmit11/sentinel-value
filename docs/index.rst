@@ -1,5 +1,5 @@
 sentinel-value
-==================
+==============
 
 .. Warning::
 
@@ -13,7 +13,7 @@ Pages:
 .. toctree::
    :maxdepth: 1
 
-   sentinel_value
+   sentinel_value_api
 
 Indices and tables
 ------------------
