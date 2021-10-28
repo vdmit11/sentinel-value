@@ -4,21 +4,21 @@ from sentinel_value import Sentinel
 
 
 def test__Sentinel__checks_for_duplicate_names():
-    Sentinel("some.module", "MISSING")
+    Sentinel("MISSING", "some.module")
 
     with pytest.raises(AssertionError):
-        Sentinel("some.module", "MISSING")
+        Sentinel("MISSING", "some.module")
 
-    Sentinel("some.module", "MISSING2")
-    Sentinel("some.other.module", "MISSING")
+    Sentinel("MISSING2", "some.module")
+    Sentinel("MISSING", "some.other.module")
 
 
 def test__Sentinel__str_and_repr():
-    MISSING = Sentinel("some.module2", "MISSING")
+    MISSING = Sentinel("MISSING", "some.module2")
     assert str(MISSING) == "MISSING"
     assert repr(MISSING) == "some.module2.MISSING"
 
 
 def test__Sentinel__is_falsy():
-    MISSING = Sentinel("some.module3", "MISSING")
+    MISSING = Sentinel("MISSING", "some.module3")
     assert not bool(MISSING)

@@ -9,7 +9,7 @@ class Sentinel:
 
         >>> from sentinel_value import Sentinel
 
-        >>> NotSet = Sentinel(__name__, 'NotSet')
+        >>> NotSet = Sentinel('NotSet', __name__)
 
         >>> value = getattr(object, 'some_attribute', NotSet)
         >>> if value is NotSet:
@@ -19,7 +19,7 @@ class Sentinel:
 
     registered_names: Set[str] = set()
 
-    def __init__(self, module_name: str, instance_name: str) -> None:
+    def __init__(self, instance_name: str, module_name: str) -> None:
         qualified_name = module_name + "." + instance_name
 
         if qualified_name in self.registered_names:
