@@ -1,5 +1,5 @@
-﻿﻿sentinel_value module API reference
-===================================
+﻿API reference
+=============
 
 .. currentmodule:: sentinel_value
 
