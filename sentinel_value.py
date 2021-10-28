@@ -2,19 +2,33 @@ from typing import Dict
 
 
 class SentinelValue:
-    """A class that allows to create special marker objects.
+    """Class for special unique placeholder objects, akin to ``None``.
 
-    Mostly useful for distinguishing "value is not set" and "value is set to None" cases,
+    Useful for distinguishing "value is not set" and "value is set to None" cases
     as shown in this example::
 
-        >>> from sentinel_value import SentinelValue
+        >>> NOT_SET = SentinelValue("NOT_SET", __name__)
 
-        >>> NotSet = SentinelValue('NotSet', __name__)
-
-        >>> value = getattr(object, 'some_attribute', NotSet)
-        >>> if value is NotSet:
+        >>> value = getattr(object, "some_attribute", NOT_SET)
+        >>> if value is NOT_SET:
         ...    print('attribute is not set')
         attribute is not set
+
+    If you need a separate type (for use with :mod:`typing` or :func:`functools.singledispatch`),
+    then you can create a subclass::
+
+        >>> from typing import Union
+
+        >>> class Missing(SentinelValue):
+        ...     pass
+
+        >>> MISSING = Missing("Missing", __name__)
+
+        # Here is how the Missing class can be used for type hinting.
+        >>> value: Union[str, None, Missing] = getattr(object, "some_attribute", MISSING)
+        >>> if value is MISSING:
+        ...    print("value is missing")
+        value is missing
     """
 
     def __init__(self, instance_name: str, module_name: str) -> None:
