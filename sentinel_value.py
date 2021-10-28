@@ -1,4 +1,4 @@
-from typing import Set
+from typing import Dict
 
 
 class SentinelValue:
@@ -17,16 +17,10 @@ class SentinelValue:
         attribute is not set
     """
 
-    registered_names: Set[str] = set()
-
     def __init__(self, instance_name: str, module_name: str) -> None:
         qualified_name = module_name + "." + instance_name
 
-        if qualified_name in self.registered_names:
-            raise AssertionError(
-                f"SentinelValue with name `{qualified_name}` is already registered."
-            )
-        self.registered_names.add(qualified_name)
+        _register_instance(qualified_name, self)
 
         self.short_name = instance_name
         self.qualified_name = qualified_name
@@ -42,3 +36,30 @@ class SentinelValue:
     @staticmethod
     def __bool__():
         return False
+
+
+registered_sentinel_value_instances: Dict[str, SentinelValue] = {}
+"""Dictionary that contains all instances of SentinelValue (and its subclasses).
+
+This dictionary looks like this::
+
+  {
+      "package1.module1.MISSING": SentinelValue("MISSING", module_name="package1.module1.MISSING"),
+      "package2.module2.MISSING": SentinelValue("MISSING", module_name="package2.module2.MISSING"),
+      "package2.module2.ABSENT": SentinelValue("ABSENT", module_name="package2.module2.ABSENT"),
+  }
+
+When a :class:`SentinelValue` object is instanciated, it registers itself in this dictionary
+(and throws an error if already registered). This is needed to ensure that, for each name,
+there exists only 1 unique :class:`SentinelValue` object.
+"""
+
+
+def _register_instance(qualified_name, sentinel_value_instance):
+    _ensure_instance_is_not_already_registered(qualified_name)
+    registered_sentinel_value_instances[qualified_name] = sentinel_value_instance
+
+
+def _ensure_instance_is_not_already_registered(qualified_name):
+    if qualified_name in registered_sentinel_value_instances:
+        raise AssertionError(f"SentinelValue with name `{qualified_name}` is already registered.")
