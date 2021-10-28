@@ -19,6 +19,7 @@ jobs:
         uses: abatilo/actions-poetry@v2.1.3
       - name: Install Python packages
         run: |
+          poetry config experimental.new-installer false
           poetry install --no-root
       - name: Run tests
         run: |
