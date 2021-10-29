@@ -31,13 +31,24 @@ class SentinelValue:
         value is missing
     """
 
+    def __new__(cls, instance_name: str, module_name: str, *args, **kwargs):  # noqa: D103
+        qualified_name = cls._compose_qualified_name(instance_name, module_name)
+
+        existing_instance = registered_sentinel_value_instances.get(qualified_name)
+        if existing_instance is not None:
+            return existing_instance
+
+        new_instance = super().__new__(cls)
+        registered_sentinel_value_instances[qualified_name] = new_instance
+        return new_instance
+
+    @staticmethod
+    def _compose_qualified_name(instance_name: str, module_name: str) -> str:
+        return module_name + "." + instance_name
+
     def __init__(self, instance_name: str, module_name: str) -> None:
-        qualified_name = module_name + "." + instance_name
-
-        _register_instance(qualified_name, self)
-
         self.short_name = instance_name
-        self.qualified_name = qualified_name
+        self.qualified_name = self._compose_qualified_name(instance_name, module_name)
 
         super().__init__()
 
@@ -67,13 +78,3 @@ When a :class:`SentinelValue` object is instanciated, it registers itself in thi
 (and throws an error if already registered). This is needed to ensure that, for each name,
 there exists only 1 unique :class:`SentinelValue` object.
 """
-
-
-def _register_instance(qualified_name, sentinel_value_instance):
-    _ensure_instance_is_not_already_registered(qualified_name)
-    registered_sentinel_value_instances[qualified_name] = sentinel_value_instance
-
-
-def _ensure_instance_is_not_already_registered(qualified_name):
-    if qualified_name in registered_sentinel_value_instances:
-        raise AssertionError(f"SentinelValue with name `{qualified_name}` is already registered.")
