@@ -31,8 +31,8 @@ class SentinelValue:
         value is missing
     """
 
-    def __new__(cls, instance_name: str, module_name: str, *args, **kwargs):  # noqa: D103
-        qualified_name = cls._compose_qualified_name(instance_name, module_name)
+    def __new__(cls, name: str, module_name: str, *args, **kwargs):  # noqa: D103
+        qualified_name = cls._compose_qualified_name(name, module_name)
 
         existing_instance = registered_sentinel_value_instances.get(qualified_name)
         if existing_instance is not None:
@@ -43,12 +43,12 @@ class SentinelValue:
         return new_instance
 
     @staticmethod
-    def _compose_qualified_name(instance_name: str, module_name: str) -> str:
-        return module_name + "." + instance_name
+    def _compose_qualified_name(name: str, module_name: str) -> str:
+        return module_name + "." + name
 
-    def __init__(self, instance_name: str, module_name: str) -> None:
-        self.short_name = instance_name
-        self.qualified_name = self._compose_qualified_name(instance_name, module_name)
+    def __init__(self, name: str, module_name: str) -> None:
+        self.short_name = name
+        self.qualified_name = self._compose_qualified_name(name, module_name)
 
         super().__init__()
 
