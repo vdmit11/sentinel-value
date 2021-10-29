@@ -1,5 +1,7 @@
-sentinel-value
-==============
+.. currentmodule:: sentinel_value
+
+Overview
+========
 
 .. Warning::
 
@@ -8,16 +10,23 @@ sentinel-value
    Use with caution.
 
 
-Pages:
-         
-.. toctree::
-   :maxdepth: 1
+.. contents::
 
-   api_reference
 
-Indices and tables
-------------------
+API reference
+=============
 
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
+.. rubric:: class SentinelValue
+
+.. autosummary::
+
+      SentinelValue
+
+
+.. rubric:: Other members of the module
+
+.. autosummary::
+   registered_sentinel_value_instances
+
+
+.. automodule:: sentinel_value
