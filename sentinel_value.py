@@ -31,7 +31,7 @@ class SentinelValue:
         value is missing
     """
 
-    def __new__(cls, name: str, module_name: str, *args, **kwargs):  # noqa: D103
+    def __new__(cls, name: str, module_name: str):  # noqa: D103
         qualified_name = cls._compose_qualified_name(name, module_name)
 
         existing_instance = registered_sentinel_value_instances.get(qualified_name)
