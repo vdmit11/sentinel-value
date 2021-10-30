@@ -36,12 +36,12 @@ class SentinelValue:
     def __new__(cls, variable_name, module_name):  # noqa: D103
         qualified_name = cls._compose_qualified_name(variable_name, module_name)
 
-        existing_instance = registered_sentinel_value_instances.get(qualified_name)
+        existing_instance = sentinel_value_instances.get(qualified_name)
         if existing_instance is not None:
             return existing_instance
 
         new_instance = super().__new__(cls)
-        registered_sentinel_value_instances[qualified_name] = new_instance
+        sentinel_value_instances[qualified_name] = new_instance
         return new_instance
 
     @staticmethod
@@ -65,7 +65,7 @@ class SentinelValue:
         return False
 
 
-registered_sentinel_value_instances: Dict[str, SentinelValue] = {}
+sentinel_value_instances: Dict[str, SentinelValue] = {}
 """Dictionary that contains all instances of SentinelValue (and its subclasses).
 
 This dictionary looks like this::

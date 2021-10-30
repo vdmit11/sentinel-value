@@ -74,7 +74,7 @@ API reference
 .. rubric:: Other members of the module
 
 .. autosummary::
-   registered_sentinel_value_instances
+   sentinel_value_instances
 
 
 .. automodule:: sentinel_value
