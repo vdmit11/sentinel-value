@@ -1,4 +1,6 @@
-from typing import Dict
+import inspect
+import sys
+from typing import Dict, Optional, Type
 
 
 class SentinelValue:
@@ -78,3 +80,76 @@ When a :class:`SentinelValue` object is instanciated, it registers itself in thi
 (and throws an error if already registered). This is needed to ensure that, for each name,
 there exists only 1 unique :class:`SentinelValue` object.
 """
+
+
+def sentinel(
+    variable_name: str,
+    repr: Optional[str] = None,
+) -> SentinelValue:
+    """Create an unique sentinel object.
+
+    Implementation of PEP 661
+    https://www.python.org/dev/peps/pep-0661/
+
+        >>> MISSING = sentinel("MISSING")
+
+        >>> value = getattr(object, "value", MISSING)
+
+        >>> if value is MISSING:
+        ...     print("value is not set")
+        value is not set
+
+    :param variable_name: Name of Python variable that points to the sentinel object.
+                          Needed for serialization (like :mod:`pickle`) and also nice :func:`repr`.
+
+    :param repr: Any custom string that will be returned by func:`repr`.
+                 By default, composed as ``{module_name}.{variable_name}``.
+    """
+    # pylint: disable=redefined-builtin
+
+    module_name = _get_caller_module_name()
+    assert module_name
+
+    SentinelValueSubclass = _create_sentinel_value_subclass(variable_name, module_name)
+
+    if repr:
+        SentinelValueSubclass.__repr__ = lambda self: repr  # type: ignore
+
+    return SentinelValueSubclass(variable_name, module_name)
+
+
+def _get_caller_module_name() -> Optional[str]:
+    # Walk over the call stack, and stop as soon as we leave this (sentinel_value) module.
+    frame = inspect.currentframe()
+    while frame:
+        module_name: str = frame.f_globals["__name__"]
+
+        if module_name != __name__:
+            return module_name
+
+        frame = frame.f_back
+
+    # Normally the code should never reach this point.
+    # It may be only the case when stack inspectio is not available
+    # (on some alternative Python implementation, like maybe Jython)
+    return None
+
+
+def _create_sentinel_value_subclass(variable_name: str, module_name: str) -> Type[SentinelValue]:
+    # Genarate class name from variable name.
+    # E.g.: MISSING -> _sentinel_type_MISSING
+    class_name = "_sentinel_type_" + variable_name.replace(".", "_")
+
+    SentinelValueSubclass = type(class_name, (SentinelValue,), {})
+
+    # Here is a wired thing:
+    module = sys.modules[module_name]
+
+    if hasattr(module, class_name):
+        existing_class = getattr(module, class_name)
+        assert issubclass(existing_class, SentinelValue)
+
+    setattr(module, class_name, SentinelValueSubclass)
+    SentinelValueSubclass.__module__ = module_name
+
+    return SentinelValueSubclass
