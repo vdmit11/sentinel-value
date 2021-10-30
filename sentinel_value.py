@@ -1,5 +1,6 @@
 import inspect
 import sys
+import threading
 from typing import Dict, Optional, Type
 
 
@@ -36,13 +37,14 @@ class SentinelValue:
     def __new__(cls, variable_name, module_name):  # noqa: D103
         qualified_name = cls._compose_qualified_name(variable_name, module_name)
 
-        existing_instance = sentinel_value_instances.get(qualified_name)
-        if existing_instance is not None:
-            return existing_instance
+        with sentinel_create_lock:
+            existing_instance = sentinel_value_instances.get(qualified_name)
+            if existing_instance is not None:
+                return existing_instance
 
-        new_instance = super().__new__(cls)
-        sentinel_value_instances[qualified_name] = new_instance
-        return new_instance
+            new_instance = super().__new__(cls)
+            sentinel_value_instances[qualified_name] = new_instance
+            return new_instance
 
     @staticmethod
     def _compose_qualified_name(variable_name: str, module_name: str) -> str:
@@ -79,6 +81,22 @@ This dictionary looks like this::
 When a :class:`SentinelValue` object is instanciated, it registers itself in this dictionary
 (and throws an error if already registered). This is needed to ensure that, for each name,
 there exists only 1 unique :class:`SentinelValue` object.
+"""
+
+
+sentinel_create_lock = threading.Lock()
+"""A lock that prevents race conditions when creating new :class:`SentinelValue` objects.
+
+Problem: when you start multiple threads, they may try to create sentinel objects concurrently.
+If you're lucky enough, you get duplicate :class:`SentinelValue` instances,
+which is highly undesirable.
+
+This :data:`sentinel_create_lock` helps to protect against such race conditions.
+
+The lock is acquired whenever a new :class:`SentienlValue` object is created.
+So, when multiple threads try to create sentinel objects, then they're executed in sequence,
+and the 1st thread really creates a new instance, and other threads will get the already
+existing instance.
 """
 
 
