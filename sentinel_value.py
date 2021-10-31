@@ -34,25 +34,9 @@ class SentinelValue:
         value is missing
     """
 
-    def __new__(cls, variable_name, module_name):  # noqa: D103
-        qualified_name = cls._compose_qualified_name(variable_name, module_name)
-
-        with sentinel_create_lock:
-            existing_instance = sentinel_value_instances.get(qualified_name)
-            if existing_instance is not None:
-                return existing_instance
-
-            new_instance = super().__new__(cls)
-            sentinel_value_instances[qualified_name] = new_instance
-            return new_instance
-
-    @staticmethod
-    def _compose_qualified_name(variable_name: str, module_name: str) -> str:
-        return module_name + "." + variable_name
-
     def __init__(self, variable_name: str, module_name: str) -> None:
         self.short_name = variable_name
-        self.qualified_name = self._compose_qualified_name(variable_name, module_name)
+        self.qualified_name = _compose_qualified_name(variable_name, module_name)
 
         super().__init__()
 
@@ -128,12 +112,25 @@ def sentinel(
     module_name = _get_caller_module_name()
     assert module_name
 
-    SentinelValueSubclass = _create_sentinel_value_subclass(variable_name, module_name)
+    qualified_name = _compose_qualified_name(variable_name, module_name)
 
-    if repr:
-        SentinelValueSubclass.__repr__ = lambda self: repr  # type: ignore
+    with sentinel_create_lock:
+        existing_instance = sentinel_value_instances.get(qualified_name)
+        if existing_instance is not None:
+            return existing_instance
 
-    return SentinelValueSubclass(variable_name, module_name)
+        SentinelValueSubclass = _create_sentinel_value_subclass(variable_name, module_name)
+
+        if repr:
+            SentinelValueSubclass.__repr__ = lambda self: repr  # type: ignore
+
+        new_instance = SentinelValueSubclass(variable_name, module_name)
+        sentinel_value_instances[qualified_name] = new_instance
+        return new_instance
+
+
+def _compose_qualified_name(variable_name: str, module_name: str) -> str:
+    return module_name + "." + variable_name
 
 
 def _get_caller_module_name() -> Optional[str]:
@@ -158,15 +155,15 @@ def _create_sentinel_value_subclass(variable_name: str, module_name: str) -> Typ
     # E.g.: MISSING -> _sentinel_type_MISSING
     class_name = "_sentinel_type_" + variable_name.replace(".", "_")
 
+    # Create new subclass of SentinelValue
     SentinelValueSubclass = type(class_name, (SentinelValue,), {})
 
-    # Here is a wired thing:
+    # Bind class and module.
+    # That mutates module's globals, as well as class.__module__ attribute,
+    # so the class created above really becomes a first-citizen member of the module,
+    # indistinguishable from classes defined in the module code.
     module = sys.modules[module_name]
-
-    if hasattr(module, class_name):
-        existing_class = getattr(module, class_name)
-        assert issubclass(existing_class, SentinelValue)
-
+    assert not hasattr(module, class_name)
     setattr(module, class_name, SentinelValueSubclass)
     SentinelValueSubclass.__module__ = module_name
 
