@@ -87,6 +87,51 @@ Such code is slightly more verbose (than using :func:`sentinel`), but, there are
 - Friendly to :mod:`typing` on older Python versions, that don't have :data:`typing.Literal`
 
 
+Type Annotations
+================
+
+`PEP 661`_ suggests to use :data:`typing.Literal`, like this::
+
+  from typing import Literal
+  from sentinel_value import sentinel
+
+  NOT_GIVEN = sentinel("NOT_GIVEN")
+
+  def foo(value: int | Literal[NOT_GIVEN]) -> None:
+  ...     return None
+
+
+But, there is a problem: `mypy <http://www.mypy-lang.org/>`_ type checker thinks it is an error:
+
+.. code-block:: no-highlight
+
+  mypy main.py
+
+  main.py:6: error: Parameter 1 of Literal[...] is invalid  [misc]
+  main.py:6: error: Variable "main.NOT_GIVEN" is not valid as a type  [valid-type]
+  main.py:6: note: See https://mypy.readthedocs.io/en/stable/common_issues.html#variables-vs-type-aliases
+  Found 2 errors in 1 file (checked 1 source file)
+
+Maybe such :data:`typing.Literal` expressions will be supported in the future,
+but at least now (November 2021, mypy v0.910, Python v3.10.0) it is broken,
+and you cannot use ``Literal[SENTINEL_VALUE]`` for type hinting.
+
+So, for now, the only way to have proper type annotations is to avoid :func:`sentinel` function
+and instead make your own subclasses of :class:`SentinelValue`, like this::
+
+  >>> from typing import Union
+  >>> from sentinel_value import SentinelValue
+
+  >>> class NotGiven(SentinelValue):
+  ...     pass
+
+  >>> NOT_GIVEN = NotGiven("NOT_GIVEN", __name__)
+
+  >>> def foo(value: Union[int, NotGiven]) -> None:
+  ...     return None
+
+This way it works like a charm, and it doesn't even require :data:`typing.Literal`.
+
 Naming Convention
 =================
 
