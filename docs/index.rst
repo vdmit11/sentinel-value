@@ -102,7 +102,7 @@ or, when subclassing :class:`SentinelValue`:
   >>> class NotSet(SentinelValue):
   ...     pass
 
-  >>> NOT_SET = NotGiven("NotSet", __name__)
+  >>> NOT_SET = NotSet("NotSet", __name__)
 
 Why? Because:
 
@@ -110,11 +110,11 @@ Why? Because:
 
 - This naming scheme gives slightly less cryptic error messages. For example, this::
 
-    AttributeError: 'NotGiven' object has no attribute 'foo'
+    AttributeError: 'NotSet' object has no attribute 'foo'
 
   reads slightly better (at least to my eye) than this::
 
-    AttributeError: 'NotGivenType' object has no attribute 'foo'
+    AttributeError: 'NotSetType' object has no attribute 'foo'
 
 
 
