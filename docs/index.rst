@@ -13,53 +13,110 @@ Overview
 .. contents::
 
 
-Work In Progress...
+``sentinel-value`` is a Python package, that helps to create `Sentinel Values`_ -
+special singleton objects, akin to :data:`None`, :data:`NotImplemented` and :data:`Ellipsis`.
+
+It implements the :func:`sentinel` function (described by `PEP 661`_),
+and also :class:`SentinelValue` class for advanced cases (not a part of `PEP 661`_).
+
+.. _`Sentinel Values`: https://en.wikipedia.org/wiki/Sentinel_value
+.. _`PEP 661`: https://www.python.org/dev/peps/pep-0661
+
+
+Usage example::
+
+  >>> from sentinel_value import sentinel
+
+  >>> MISSING = sentinel("MISSING")
+
+  >>> def get_something(default=MISSING):
+  ...     ...
+  ...     if default is not MISSING:
+  ...         return default
+  ...     ...
+
+
+why not just object()?
+======================
+
+So, why not just ``MISSING = object()``?
+
+Because sentinel values have some benefits:
+
+- better ``repr()``
+- friendly to :mod:`typing`
+- friendly to :mod:`pickle`
+- friendly to hot code reloading features of IDEs
+
+So this is not radical killer feature, but more a list of small nice-to-have things.
+
+
+function sentinel()
 ===================
+
+:func:`sentinel` function is the simple way to create sentinel objects in 1 line::
+
+  >>> MISSING = sentinel("MISSING")
+
+It produces an instance of :class:`SentinelValue`, with all its features
+(uniqueness, pickle-ability, etc), and it just works in most cases.
+
+However, there are some cases where it doesn't work well, and you may want to
+directly use the underlying class :class:`SentinelValue`, described below.
+
+
+class SentinelValue()
+=====================
+
+A little bit more advanced way to create sentinel objects is to do this::
+
+  >>> from sentinel_value import SentinelValue
+
+  >>> class Missing(SentinelValue):
+  ...     pass
+
+  >>> MISSING = Missing("MISSING", __name__)
+
+Such code is slightly more verbose (than using :func:`sentinel`), but, there are some benfits:
+
+- It is portable (while :func:`sentinel()` is not, because it relies on :class:`inspect.currentframe`).
+- It is extensible. You can add and override various methods in your class.
+- Class definition is obvious. You can immediately find it in your code when you get
+  ``AttributeError: 'Missing' object has no attribute '...'``
+- Can be used with :func:`functools.singledispatch`
+- Friendly to :mod:`typing` on older Python versions, that don't have :data:`typing.Literal`
+
+
+Naming Convention
+=================
+
+`PEP 661`_ doesn't enforce any naming convention, however, I (the author of this Python package)
+would recommend using ``UPPER_CASE`` for sentinel objects, like this::
+
+  >>> NOT_SET = sentinel("NOT_SET")
+
+or, when subclassing :class:`SentinelValue`:
 
 .. code-block::
 
-   >>> from sentinel_value import SentinelValue
+  >>> class NotSet(SentinelValue):
+  ...     pass
 
-Usually, when you call class constructor (e.g., when you do ``SomeClass()``)
-you expect to get a new instance on each call.
+  >>> NOT_SET = NotGiven("NotSet", __name__)
 
-This is not the case for :class:`SentinelValue` class, that overrides
-:meth:`object.__new__` method, and thus alters how new instances are created.
+Why? Because:
 
-It creates 1 instance per name. Check this out::
+- Sentinel values are unique global constants by definition, and constants are ``NAMED_LIKE_THIS``
 
-  # The two different variables (MISSING1 and MISSING2)
-  # are done only for demonstration purposes.
-  #
-  # You should never do this in your code.
-  # That gives bad repr(), and also may cause problems with pickling.
-  #
-  # A good code would look like this:
-  #    MISSING = SentinelValue("MISSING", __name__)
-  #
-  # That is, you should always have only 1 variable,
-  # and its name should match to the SentinelValue() argument.
+- This naming scheme gives slightly less cryptic error messages. For example, this::
 
-  >>> MISSING1 = SentinelValue("MISSING", __name__)
-  >>> MISSING2 = SentinelValue("MISSING", __name__)
+    AttributeError: 'NotGiven' object has no attribute 'foo'
 
-  >>> MISSING1 is MISSING2
-  True
+  reads slightly better (at least to my eye) than this::
 
-That is, on the 2nd call, you get the *exactly same* object.
-
-This is needed for:
-
-1. :mod:`pickle` serialization.
-
-   That is, when you pickle/un-pickle sentinel values,
-   you get references to global objects (and not their copies)
+    AttributeError: 'NotGivenType' object has no attribute 'foo'
 
 
-2. Reloading parts of your code (without restarting the whole Python process).
-
-   That is, you can send (and re-send) code to IPython shell, and it wouldn't break
-   because of some ``MISSING`` object that was replaced with a new instance by an accident.
 
 API reference
 =============
@@ -75,6 +132,7 @@ API reference
 
 .. autosummary::
    sentinel_value_instances
-
+   sentinel_create_lock
+   sentinel
 
 .. automodule:: sentinel_value
