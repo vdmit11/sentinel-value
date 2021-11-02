@@ -1,3 +1,4 @@
+import pickle
 from unittest import mock
 
 import pytest
@@ -46,6 +47,28 @@ def test__SentinelValue_can_change_class_on_the_fly():
 
     assert MISSING_redefined is MISSING
     assert MISSING_redefined.__class__ is Missing
+
+
+def test__SentinelValue_is_pickleable():
+    MISSING = SentinelValue("MISSING", __name__)
+    MISSING_unpickled = pickle.loads(pickle.dumps(MISSING))
+    assert MISSING_unpickled is MISSING
+
+
+class NoValue(SentinelValue):
+    pass
+
+
+def test__SentinelValueSubclass_is_pickleable():
+    NO_VALUE = NoValue("NO_VALUE", __name__)
+    NO_VALUE_unpickled = pickle.loads(pickle.dumps(NO_VALUE))
+    assert NO_VALUE_unpickled is NO_VALUE
+
+
+def test__instance_produced_by_sentinel_function__is_picklable():
+    NOT_GIVEN = sentinel("NOT_GIVEN")
+    NOT_GIVEN_unpickled = pickle.loads(pickle.dumps(NOT_GIVEN))
+    assert NOT_GIVEN_unpickled is NOT_GIVEN
 
 
 def test__sentinel__custom_repr():
