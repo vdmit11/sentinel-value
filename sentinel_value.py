@@ -34,8 +34,8 @@ class SentinelValue:
         value is missing
     """
 
-    def __new__(cls, variable_name, module_name):  # noqa: D103
-        qualified_name = cls._compose_qualified_name(variable_name, module_name)
+    def __new__(cls, instance_name, module_name):  # noqa: D103
+        qualified_name = cls._compose_qualified_name(instance_name, module_name)
 
         with sentinel_create_lock:
             existing_instance = sentinel_value_instances.get(qualified_name)
@@ -47,12 +47,12 @@ class SentinelValue:
             return new_instance
 
     @staticmethod
-    def _compose_qualified_name(variable_name: str, module_name: str) -> str:
-        return module_name + "." + variable_name
+    def _compose_qualified_name(instance_name: str, module_name: str) -> str:
+        return module_name + "." + instance_name
 
-    def __init__(self, variable_name: str, module_name: str) -> None:
-        self.short_name = variable_name
-        self.qualified_name = self._compose_qualified_name(variable_name, module_name)
+    def __init__(self, instance_name: str, module_name: str) -> None:
+        self.short_name = instance_name
+        self.qualified_name = self._compose_qualified_name(instance_name, module_name)
 
         super().__init__()
 
@@ -101,7 +101,7 @@ existing instance.
 
 
 def sentinel(
-    variable_name: str,
+    instance_name: str,
     repr: Optional[str] = None,
 ) -> SentinelValue:
     """Create an unique sentinel object.
@@ -117,23 +117,23 @@ def sentinel(
         ...     print("value is not set")
         value is not set
 
-    :param variable_name: Name of Python variable that points to the sentinel object.
+    :param instance_name: Name of Python variable that points to the sentinel object.
                           Needed for serialization (like :mod:`pickle`) and also nice :func:`repr`.
 
     :param repr: Any custom string that will be returned by func:`repr`.
-                 By default, composed as ``{module_name}.{variable_name}``.
+                 By default, composed as ``{module_name}.{instance_name}``.
     """
     # pylint: disable=redefined-builtin
 
     module_name = _get_caller_module_name()
     assert module_name
 
-    SentinelValueSubclass = _create_sentinel_value_subclass(variable_name, module_name)
+    SentinelValueSubclass = _create_sentinel_value_subclass(instance_name, module_name)
 
     if repr:
         SentinelValueSubclass.__repr__ = lambda self: repr  # type: ignore
 
-    return SentinelValueSubclass(variable_name, module_name)
+    return SentinelValueSubclass(instance_name, module_name)
 
 
 def _get_caller_module_name() -> Optional[str]:
@@ -153,10 +153,10 @@ def _get_caller_module_name() -> Optional[str]:
     return None
 
 
-def _create_sentinel_value_subclass(variable_name: str, module_name: str) -> Type[SentinelValue]:
+def _create_sentinel_value_subclass(instance_name: str, module_name: str) -> Type[SentinelValue]:
     # Genarate class name from variable name.
     # E.g.: MISSING -> _sentinel_type_MISSING
-    class_name = "_sentinel_type_" + variable_name.replace(".", "_")
+    class_name = "_sentinel_type_" + instance_name.replace(".", "_")
 
     SentinelValueSubclass = type(class_name, (SentinelValue,), {})
 
