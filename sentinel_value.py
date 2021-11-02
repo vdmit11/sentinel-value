@@ -151,19 +151,24 @@ def _get_caller_module_name() -> Optional[str]:
 
 
 def _create_sentinel_value_subclass(instance_name: str, module_name: str) -> Type[SentinelValue]:
+    module = sys.modules[module_name]
+
     # Genarate class name from variable name.
     # E.g.: MISSING -> _sentinel_type_MISSING
     class_name = "_sentinel_type_" + instance_name.replace(".", "_")
 
+    # Class should be created only once, so first check if it was already created.
+    if hasattr(module, class_name):
+        existing_class: Type[SentinelValue] = getattr(module, class_name)
+        assert issubclass(existing_class, SentinelValue)
+        return existing_class
+
+    # Create a new subclass of SentinelValue.
     SentinelValueSubclass = type(class_name, (SentinelValue,), {})
 
-    # Here is a wired thing:
-    module = sys.modules[module_name]
-
-    if hasattr(module, class_name):
-        existing_class = getattr(module, class_name)
-        assert issubclass(existing_class, SentinelValue)
-
+    # Bind class with the module.
+    # That modifies module's globals, so the class really becomes a member of the module,
+    # indistinguishable from classes that you define in the code.
     setattr(module, class_name, SentinelValueSubclass)
     SentinelValueSubclass.__module__ = module_name
 

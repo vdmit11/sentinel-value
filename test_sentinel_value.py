@@ -37,3 +37,16 @@ def test__sentinel__throws_error_if_call_stack_not_available(currentframe_mock):
 
     with pytest.raises(AssertionError):
         sentinel("MISSING")
+
+
+def test__sentinel__creates_subclass_of_SentinelValue():
+    MISSING = sentinel("MISSING")
+    Missing = MISSING.__class__
+
+    assert Missing is not SentinelValue
+    assert issubclass(Missing, SentinelValue)
+
+    MISSING2 = sentinel("MISSING")
+    Missing2 = MISSING2.__class__
+
+    assert Missing2 is Missing
