@@ -40,6 +40,11 @@ class SentinelValue:
         with sentinel_create_lock:
             existing_instance = sentinel_value_instances.get(qualified_name)
             if existing_instance is not None:
+
+                # Change class on the fly. This is needed for live code reloading features.
+                if existing_instance.__class__ is not cls:
+                    existing_instance.__class__ = cls
+
                 return existing_instance
 
             new_instance = super().__new__(cls)

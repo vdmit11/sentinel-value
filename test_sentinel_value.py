@@ -2,7 +2,13 @@ from unittest import mock
 
 import pytest
 
-from sentinel_value import SentinelValue, sentinel
+from sentinel_value import SentinelValue, sentinel, sentinel_value_instances
+
+
+@pytest.fixture(autouse=True)
+def cleanup_sentinel_value_instances_after_each_test():
+    yield
+    sentinel_value_instances.clear()
 
 
 def test__SentinelValue__str_and_repr():
@@ -14,6 +20,32 @@ def test__SentinelValue__str_and_repr():
 def test__SentinelValue__is_falsy():
     MISSING = SentinelValue("MISSING", "some.module3")
     assert not bool(MISSING)
+
+
+def test__SentinelValue_creates_new_instance_only_once_per_name():
+    MISSING = SentinelValue("MISSING", "some.module")
+
+    MISSING_duplicate = SentinelValue("MISSING", "some.module")
+    assert MISSING is MISSING_duplicate
+
+    MISSING2 = SentinelValue("MISSING2", "some.module")
+    assert MISSING is not MISSING2
+
+    MISSING_in_other_module = SentinelValue("MISSING", "some.module2")
+    assert MISSING is not MISSING_in_other_module
+
+
+def test__SentinelValue_can_change_class_on_the_fly():
+    MISSING = SentinelValue("MISSING", __name__)
+    assert MISSING.__class__ is SentinelValue
+
+    class Missing(SentinelValue):
+        pass
+
+    MISSING_redefined = Missing("MISSING", __name__)
+
+    assert MISSING_redefined is MISSING
+    assert MISSING_redefined.__class__ is Missing
 
 
 def test__sentinel__custom_repr():
