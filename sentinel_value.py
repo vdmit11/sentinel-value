@@ -56,11 +56,8 @@ class SentinelValue:
 
         super().__init__()
 
-    def __str__(self):
-        return self.short_name
-
     def __repr__(self):
-        return self.qualified_name
+        return "<" + self.short_name + ">"
 
     @staticmethod
     def __bool__():

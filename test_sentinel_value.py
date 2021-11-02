@@ -7,8 +7,8 @@ from sentinel_value import SentinelValue, sentinel
 
 def test__SentinelValue__str_and_repr():
     MISSING = SentinelValue("MISSING", "some.module2")
-    assert str(MISSING) == "MISSING"
-    assert repr(MISSING) == "some.module2.MISSING"
+    assert str(MISSING) == "<MISSING>"
+    assert repr(MISSING) == "<MISSING>"
 
 
 def test__SentinelValue__is_falsy():
@@ -17,8 +17,11 @@ def test__SentinelValue__is_falsy():
 
 
 def test__sentinel__custom_repr():
-    MISSING = sentinel("MISSING", "my.module.MISSING")
-    assert repr(MISSING) == "my.module.MISSING"
+    MISSING1 = sentinel("MISSING1")
+    assert repr(MISSING1) == "<MISSING1>"
+
+    MISSING2 = sentinel("MISSING2", repr="my.module.MISSING2")
+    assert repr(MISSING2) == "my.module.MISSING2"
 
 
 def test__sentinel__can_be_called_multiple_times():
