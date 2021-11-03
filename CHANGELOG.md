@@ -2,6 +2,10 @@
 
 <!--next-version-placeholder-->
 
+## v0.3.2 (2021-11-03)
+### Fix
+* Py.typed is installed to site-packages directory ([`ffa8256`](https://github.com/vdmit11/sentinel-value/commit/ffa8256c02cf691241dee979a3e38be387206b6d))
+
 ## v0.3.1 (2021-11-03)
 ### Fix
 * Missing py.typed marker file (see PEP 561) ([`c5bcd5a`](https://github.com/vdmit11/sentinel-value/commit/c5bcd5a5ce1154a2312701469b16fa4831b73494))
