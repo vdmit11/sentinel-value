@@ -43,7 +43,7 @@ So, why not just ``MISSING = object()``?
 
 Because sentinel values have some benefits:
 
-- better ``repr()``
+- better :func:`repr`
 - friendly to :mod:`typing`
 - friendly to :mod:`pickle`
 - friendly to hot code reloading features of IDEs
@@ -171,6 +171,10 @@ API reference
 .. autosummary::
 
       SentinelValue
+      SentinelValue.__new__
+      SentinelValue.__init__
+      SentinelValue.__repr__
+      SentinelValue.__bool__
 
 
 .. rubric:: Other members of the module
@@ -181,3 +185,4 @@ API reference
    sentinel
 
 .. automodule:: sentinel_value
+

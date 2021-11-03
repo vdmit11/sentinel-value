@@ -52,7 +52,7 @@ extensions = [
 autodoc_default_options = {
     "members": True,
     "member-order": "bysource",
-    "special-members": "__call__,__init__",
+    "special-members": "__bool__,__call__,__init__,__new__,__repr__",
 }
 
 # Remove type hints from function signatures (and instead put them to function description).
