@@ -14,6 +14,8 @@ classifiers = [
   "Intended Audience :: Developers",
   "License :: OSI Approved :: MIT License",
   "Programming Language :: Python",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.6",
   "Programming Language :: Python :: 3.7",
   "Programming Language :: Python :: 3.8",
   "Programming Language :: Python :: 3.9",
@@ -24,14 +26,13 @@ classifiers = [
 
 
 [tool.poetry.dependencies]
-python = "^3.7.1"
-
+python = "^3.6.0"
 
 [tool.poetry.dev-dependencies]
 Sphinx = "^4.2.0"
-black = "^21.9b0"
-ipython = "^7.28.0"
-isort = "^5.9.3"
+black = "^20.8b1"
+ipython = "^7.15.0"
+isort = "^5.7.0"
 mypy = "^0.910"
 pylava = "^0.3.0"
 pylava-pylint = "^0.0.3"
@@ -48,7 +49,6 @@ sphinx-copybutton = "^0.4.0"
 sphinx-rtd-theme = "^1.0.0"
 sphinx-toggleprompt = "^0.0.5"
 tox = "^3.24.4"
-semantic-release = "^0.1.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
@@ -97,7 +97,7 @@ exclude_lines = [
 ]
 
 [tool.mypy]
-python_version = 3.7
+python_version = 3.6
 show_error_codes = true
 warn_unreachable = true
 # Almost all flags from mypy --strict

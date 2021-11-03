@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        python-version: [ '3.7', '3.10' ]
+        python-version: [ '3.6', '3.10' ]
     name: run tests on Python v${{ matrix.python-version }}
     steps:
       - uses: actions/checkout@v2
@@ -36,7 +36,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v2
         with:
-          python-version: '3.7'
+          python-version: '3.6'
       - name: Install Python packages
         run: pip install poetry python-semantic-release
       - name: Release
