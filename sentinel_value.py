@@ -54,16 +54,16 @@ class SentinelValue:
     def __getnewargs__(self):
         return (self.instance_name, self.module_name)
 
-    @staticmethod
-    def _compose_qualified_name(instance_name: str, module_name: str) -> str:
-        return module_name + "." + instance_name
-
     def __init__(self, instance_name: str, module_name: str) -> None:
         self.instance_name = instance_name
         self.module_name = module_name
         self.qualified_name = self._compose_qualified_name(instance_name, module_name)
 
         super().__init__()
+
+    @staticmethod
+    def _compose_qualified_name(instance_name: str, module_name: str) -> str:
+        return module_name + "." + instance_name
 
     def __repr__(self):
         return "<" + self.instance_name + ">"
