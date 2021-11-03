@@ -1,4 +1,4 @@
-.. currentmodule:: sentinel_value
+.. currentmodule:: sentinel_value.sentinel_value
 
 Overview
 ========
@@ -177,5 +177,5 @@ API reference
    sentinel_create_lock
    sentinel
 
-.. automodule:: sentinel_value
+.. automodule:: sentinel_value.sentinel_value
 
