@@ -3,9 +3,51 @@ sentinel-value
 
 |pypi badge| |build badge| |docs badge|
 
-**Warning!**
 
-**The code is at the early development stage, and may be unstable. Use with caution.**
+``sentinel-value`` is a Python package, that helps to create `Sentinel Values`_ -
+special singleton objects, akin to ``None``, ``NotImplemented`` and  ``Ellipsis``.
+
+It implements the ``sentinel()`` function (described by `PEP 661`_),
+and for advanced cases it also provides the ``SentinelValue()`` class (not a part of `PEP 661`_).
+
+.. _`Sentinel Values`: https://en.wikipedia.org/wiki/Sentinel_value
+.. _`PEP 661`: https://www.python.org/dev/peps/pep-0661
+
+
+Usage example:
+
+.. code:: python
+
+  from sentinel_value import sentinel
+
+  MISSING = sentinel("MISSING")
+
+  def get_something(default=MISSING):
+      ...
+      if default is not MISSING:
+          return default
+      ...
+
+
+Or, the same thing, but using the ``SentinelValue`` class
+(slightly more verbose, but allows to have nice type annotations):
+
+.. code:: python
+
+  from typing import Union
+  from sentinel_value import SentinelValue
+
+  class Missing(SentinelValue):
+      pass
+
+  MISSING = Missing("MISSING", __name__)
+
+  def get_something(default: Union[str, Missing] = MISSING):
+      ...
+      if default is not MISSING:
+          return default
+      ...
+
 
 Links
 -----
