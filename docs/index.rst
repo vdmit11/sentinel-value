@@ -3,13 +3,6 @@
 Overview
 ========
 
-.. Warning::
-
-   The code is at the early development stage, and may be unstable.
-
-   Use with caution.
-
-
 .. contents::
 
 
