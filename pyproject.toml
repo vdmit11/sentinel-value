@@ -8,6 +8,7 @@ readme = "README.rst"
 repository = "https://github.com/vdmit11/sentinel-value"
 documentation = "https://sentinel-value.readthedocs.io"
 keywords = ["sentinel", "pep661", "singleton", "missing", "util", "typing"]
+include = ["py.typed"]
 exclude = []
 classifiers = [
   "Development Status :: 4 - Beta",
