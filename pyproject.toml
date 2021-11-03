@@ -7,7 +7,7 @@ authors = ["Dmitry Vasilyanov <vdmit11@gmail.com>"]
 readme = "README.rst"
 repository = "https://github.com/vdmit11/sentinel-value"
 documentation = "https://sentinel-value.readthedocs.io"
-keywords = ["sentinel", "util"]
+keywords = ["sentinel", "pep661", "singleton", "missing", "util", "typing"]
 exclude = []
 classifiers = [
   "Development Status :: 2 - Pre-Alpha",
