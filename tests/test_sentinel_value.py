@@ -1,4 +1,5 @@
 import pickle
+from copy import copy, deepcopy
 from unittest import mock
 
 import pytest
@@ -63,6 +64,23 @@ def test__SentinelValueSubclass_is_pickleable():
     NO_VALUE = NoValue("NO_VALUE", __name__)
     NO_VALUE_unpickled = pickle.loads(pickle.dumps(NO_VALUE))
     assert NO_VALUE_unpickled is NO_VALUE
+
+
+def test__SentinelValue__remains_singleton__when_copied():
+    class Missing(SentinelValue):
+        pass
+
+    DELETED = Missing("DELETED", __name__)
+    NEVER_SET = Missing("NEVER_SET", __name__)
+
+    DELETED_copy = copy(DELETED)
+    assert DELETED_copy is DELETED
+
+    dct = {"value1": DELETED, "value2": NEVER_SET}
+    dct_copy = deepcopy(dct)
+
+    assert dct_copy["value1"] is DELETED
+    assert dct_copy["value2"] is NEVER_SET
 
 
 def test__instance_produced_by_sentinel_function__is_picklable():
