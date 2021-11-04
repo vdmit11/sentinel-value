@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "sentinel-value"
-version = "0.3.1"
+version = "0.3.2"
 description = "Sentinel Values - unique objects akin to None, True, False"
 license = "MIT"
 authors = ["Dmitry Vasilyanov <vdmit11@gmail.com>"]
