@@ -255,8 +255,8 @@ def _create_sentinel_value_subclass(instance_name: str, module_name: str) -> Typ
     module = sys.modules[module_name]
 
     # Genarate class name from variable name.
-    # E.g.: MISSING -> _sentinel_type_MISSING
-    class_name = "_sentinel_type_" + instance_name.replace(".", "_")
+    # E.g.: MISSING -> _sentinel_MISSING
+    class_name = "_sentinel_" + instance_name.replace(".", "_")
 
     # Class should be created only once, so first check if it was already created.
     if hasattr(module, class_name):
