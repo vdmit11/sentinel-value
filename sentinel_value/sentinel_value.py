@@ -55,7 +55,7 @@ class SentinelValue:
         This is not true for the :class:`SentinelValue` class, that overrides :meth:`object.__new__`
         method to alter the way new instances are created.
 
-        The overriden :meth:`SentinelValue.__new__` method constructs 1 unique instance per name,
+        The overridden :meth:`SentinelValue.__new__` method constructs 1 unique instance per name,
         then saves it in the global registry called :data:`sentinel_value_instances`,
         and then next time it returns an already existing object.
 
@@ -91,7 +91,7 @@ class SentinelValue:
         # The create-if-not-exists kind operation has to be protected with a lock.
         #
         # Otherwise, two (or more) concurrent threads will both see that a sentinel value
-        # doensn't exist yet, both will create a new instance, and thus you get a duplicate.
+        # doesn't exist yet, both will create a new instance, and thus you get a duplicate.
         #
         # Well, of course, there is GIL (Global Interpreted Lock), that, in theory,
         # should protect us as long as we're not doing any I/O, but, there are no guarantees
