@@ -70,7 +70,7 @@ A little bit more advanced way to create sentinel objects is to do this::
 
   >>> MISSING = Missing("MISSING", __name__)
 
-Such code is slightly more verbose (than using :func:`sentinel`), but, there are some benfits:
+Such code is slightly more verbose (than using :func:`sentinel`), but, there are some benefits:
 
 - It is portable (while :func:`sentinel()` is not, because it relies on :class:`inspect.currentframe`).
 - It is extensible. You can add and override various methods in your class.
@@ -110,7 +110,7 @@ but at least now (November 2021, mypy v0.910, Python v3.10.0) it is broken,
 and you cannot use ``Literal[SENTINEL_VALUE]`` for type hinting.
 
 So, for now, the only way to have proper type annotations is to avoid :func:`sentinel` function
-and instead make your own subclasses of :class:`SentinelValue`, like this::
+and instead make your own sub-classes of :class:`SentinelValue`, like this::
 
   >>> from typing import Union
   >>> from sentinel_value import SentinelValue
