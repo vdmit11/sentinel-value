@@ -25,7 +25,7 @@ class SentinelValue:
         >>> class Missing(SentinelValue):
         ...     pass
 
-        >>> MISSING = Missing("Missing", __name__)
+        >>> MISSING = Missing("MISSING", __name__)
 
         # Here is how the Missing class can be used for type hinting.
         >>> value: Union[str, None, Missing] = getattr(object, "some_attribute", MISSING)
