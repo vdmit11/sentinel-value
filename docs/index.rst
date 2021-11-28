@@ -96,7 +96,7 @@ Type Annotations
 
 But, there is a problem: `mypy <http://www.mypy-lang.org/>`_ type checker thinks it is an error:
 
-.. code-block:: no-highlight
+.. code-block:: text
 
   mypy main.py
 
