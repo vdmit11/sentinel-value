@@ -41,6 +41,8 @@ class SentinelValue:
         :param module_name: name of Python module that hosts the sentinel value.
                             In the majority of cases you should pass ``__name__`` here.
         """
+        assert not ((module_name == self.__module__) and (instance_name == self.__class__.__name__))
+
         self.instance_name = instance_name
         self.module_name = module_name
         self.qualified_name = self._compose_qualified_name(instance_name, module_name)

@@ -140,7 +140,7 @@ or, when subclassing :class:`SentinelValue`:
   >>> class NotSet(SentinelValue):
   ...     pass
 
-  >>> NOT_SET = NotSet("NotSet", __name__)
+  >>> NOT_SET = NotSet("NOT_SET", __name__)
 
 Why? Because:
 
