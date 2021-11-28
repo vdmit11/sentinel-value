@@ -67,7 +67,6 @@ version_toml = "pyproject.toml:tool.poetry.version"
 upload_to_pypi = true
 upload_to_release = true
 build_command = "poetry build"
-major_on_zero = false
 
 [tool.pytest.ini_options]
 norecursedirs = "build dist .tox"

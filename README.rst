@@ -40,7 +40,7 @@ Or, the same thing, but using the ``SentinelValue`` class
   class Missing(SentinelValue):
       pass
 
-  MISSING = Missing("MISSING", __name__)
+  MISSING = Missing(__name__, "MISSING")
 
   def get_something(default: Union[str, Missing] = MISSING):
       ...

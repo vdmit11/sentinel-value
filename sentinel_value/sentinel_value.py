@@ -10,7 +10,7 @@ class SentinelValue:
     Useful for distinguishing "value is not set" and "value is set to None" cases
     as shown in this example::
 
-        >>> NOT_SET = SentinelValue("NOT_SET", __name__)
+        >>> NOT_SET = SentinelValue(__name__, "NOT_SET")
 
         >>> value = getattr(object, "some_attribute", NOT_SET)
         >>> if value is NOT_SET:
@@ -25,7 +25,7 @@ class SentinelValue:
         >>> class Missing(SentinelValue):
         ...     pass
 
-        >>> MISSING = Missing("MISSING", __name__)
+        >>> MISSING = Missing(__name__, "MISSING")
 
         # Here is how the Missing class can be used for type hinting.
         >>> value: Union[str, None, Missing] = getattr(object, "some_attribute", MISSING)
@@ -34,12 +34,12 @@ class SentinelValue:
         value is missing
     """
 
-    def __init__(self, instance_name: str, module_name: str) -> None:
+    def __init__(self, module_name: str, instance_name: str) -> None:
         """Initialize :class:`SentinelValue` object.
 
-        :param instance_name: name of Python variable that points to the sentinel value.
         :param module_name: name of Python module that hosts the sentinel value.
                             In the majority of cases you should pass ``__name__`` here.
+        :param instance_name: name of Python variable that points to the sentinel value.
         """
         assert not ((module_name == self.__module__) and (instance_name == self.__class__.__name__))
 
@@ -49,7 +49,7 @@ class SentinelValue:
 
         super().__init__()
 
-    def __new__(cls, instance_name, module_name):
+    def __new__(cls, module_name, instance_name):
         """Create 1 instance of SentinelValue per name.
 
         Usually, when you call a class, you expect to get a new instance on each call.
@@ -64,8 +64,8 @@ class SentinelValue:
         That is, if you call :class:`SentinelValue` multiple times with the same arguments,
         you get the *exactly same* instance, check this out::
 
-          >>> MISSING1 = SentinelValue("MISSING", __name__)
-          >>> MISSING2 = SentinelValue("MISSING", __name__)
+          >>> MISSING1 = SentinelValue(__name__, "MISSING")
+          >>> MISSING2 = SentinelValue(__name__, "MISSING")
 
           >>> MISSING1 is MISSING2
           True
@@ -124,7 +124,7 @@ class SentinelValue:
         # This is needed for pickle serialization.
         # In combination with magic in the overriden __new__() method above,
         # that allows to avoid constructing duplicates when un-pickling the object.
-        return (self.instance_name, self.module_name)
+        return (self.module_name, self.instance_name)
 
     @staticmethod
     def _compose_qualified_name(instance_name: str, module_name: str) -> str:
@@ -153,7 +153,7 @@ class SentinelValue:
         So it is often handy to do ``if not value`` to check if there is no value
         (like if an attribute is set to ``None``, or not set at all)::
 
-           >>> NOT_SET = SentinelValue("NOT_SET", __name__)
+           >>> NOT_SET = SentinelValue(__name__, "NOT_SET")
 
            >>> value = getattr(object, "foobar", NOT_SET)
 
@@ -173,9 +173,9 @@ sentinel_value_instances: Dict[str, SentinelValue] = {}
 This dictionary looks like this::
 
   {
-      "package1.module1.MISSING": SentinelValue("MISSING", module_name="package1.module1.MISSING"),
-      "package2.module2.MISSING": SentinelValue("MISSING", module_name="package2.module2.MISSING"),
-      "package2.module2.ABSENT": SentinelValue("ABSENT", module_name="package2.module2.ABSENT"),
+      "package1.module1.MISSING": SentinelValue("package1.module1", "MISSING"),
+      "package2.module2.MISSING": SentinelValue("package2.module2", "MISSING"),
+      "package2.module2.ABSENT": SentinelValue("package2.module2", "ABSENT"),
   }
 
 When a :class:`SentinelValue` object is instanciated, it registers itself in this dictionary
@@ -228,12 +228,12 @@ def sentinel(
     module_name = _get_caller_module_name()
     assert module_name
 
-    SentinelValueSubclass = _create_sentinel_value_subclass(instance_name, module_name)
+    SentinelValueSubclass = _create_sentinel_value_subclass(module_name, instance_name)
 
     if repr:
         SentinelValueSubclass.__repr__ = lambda self: repr  # type: ignore
 
-    return SentinelValueSubclass(instance_name, module_name)
+    return SentinelValueSubclass(module_name, instance_name)
 
 
 def _get_caller_module_name() -> Optional[str]:
@@ -253,7 +253,7 @@ def _get_caller_module_name() -> Optional[str]:
     return None
 
 
-def _create_sentinel_value_subclass(instance_name: str, module_name: str) -> Type[SentinelValue]:
+def _create_sentinel_value_subclass(module_name: str, instance_name: str) -> Type[SentinelValue]:
     module = sys.modules[module_name]
 
     # Genarate class name from variable name.

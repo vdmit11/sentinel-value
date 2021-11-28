@@ -68,7 +68,7 @@ A little bit more advanced way to create sentinel objects is to do this::
   >>> class Missing(SentinelValue):
   ...     pass
 
-  >>> MISSING = Missing("MISSING", __name__)
+  >>> MISSING = Missing(__name__, "MISSING")
 
 Such code is slightly more verbose (than using :func:`sentinel`), but, there are some benefits:
 
@@ -118,7 +118,7 @@ and instead make your own sub-classes of :class:`SentinelValue`, like this::
   >>> class NotGiven(SentinelValue):
   ...     pass
 
-  >>> NOT_GIVEN = NotGiven("NOT_GIVEN", __name__)
+  >>> NOT_GIVEN = NotGiven(__name__, "NOT_GIVEN")
 
   >>> def foo(value: Union[int, NotGiven]) -> None:
   ...     return None
@@ -140,7 +140,7 @@ or, when subclassing :class:`SentinelValue`:
   >>> class NotSet(SentinelValue):
   ...     pass
 
-  >>> NOT_SET = NotSet("NOT_SET", __name__)
+  >>> NOT_SET = NotSet(__name__, "NOT_SET")
 
 Why? Because:
 

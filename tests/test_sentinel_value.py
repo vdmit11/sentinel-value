@@ -14,44 +14,44 @@ def cleanup_sentinel_value_instances_after_each_test():
 
 
 def test__SentinelValue__str_and_repr():
-    MISSING = SentinelValue("MISSING", "some.module2")
+    MISSING = SentinelValue("some.module2", "MISSING")
     assert str(MISSING) == "<MISSING>"
     assert repr(MISSING) == "<MISSING>"
 
 
 def test__SentinelValue__is_falsy():
-    MISSING = SentinelValue("MISSING", "some.module3")
+    MISSING = SentinelValue("some.module3", "MISSING")
     assert not bool(MISSING)
 
 
 def test__SentinelValue_creates_new_instance_only_once_per_name():
-    MISSING = SentinelValue("MISSING", "some.module")
+    MISSING = SentinelValue("some.module", "MISSING")
 
-    MISSING_duplicate = SentinelValue("MISSING", "some.module")
+    MISSING_duplicate = SentinelValue("some.module", "MISSING")
     assert MISSING is MISSING_duplicate
 
-    MISSING2 = SentinelValue("MISSING2", "some.module")
+    MISSING2 = SentinelValue("some.module", "MISSING2")
     assert MISSING is not MISSING2
 
-    MISSING_in_other_module = SentinelValue("MISSING", "some.module2")
+    MISSING_in_other_module = SentinelValue("some.module2", "MISSING")
     assert MISSING is not MISSING_in_other_module
 
 
 def test__SentinelValue_can_change_class_on_the_fly():
-    MISSING = SentinelValue("MISSING", __name__)
+    MISSING = SentinelValue(__name__, "MISSING")
     assert MISSING.__class__ is SentinelValue
 
     class Missing(SentinelValue):
         pass
 
-    MISSING_redefined = Missing("MISSING", __name__)
+    MISSING_redefined = Missing(__name__, "MISSING")
 
     assert MISSING_redefined is MISSING
     assert MISSING_redefined.__class__ is Missing
 
 
 def test__SentinelValue_is_pickleable():
-    MISSING = SentinelValue("MISSING", __name__)
+    MISSING = SentinelValue(__name__, "MISSING")
     MISSING_unpickled = pickle.loads(pickle.dumps(MISSING))
     assert MISSING_unpickled is MISSING
 
@@ -61,7 +61,7 @@ class NoValue(SentinelValue):
 
 
 def test__SentinelValueSubclass_is_pickleable():
-    NO_VALUE = NoValue("NO_VALUE", __name__)
+    NO_VALUE = NoValue(__name__, "NO_VALUE")
     NO_VALUE_unpickled = pickle.loads(pickle.dumps(NO_VALUE))
     assert NO_VALUE_unpickled is NO_VALUE
 
@@ -70,8 +70,8 @@ def test__SentinelValue__remains_singleton__when_copied():
     class Missing(SentinelValue):
         pass
 
-    DELETED = Missing("DELETED", __name__)
-    NEVER_SET = Missing("NEVER_SET", __name__)
+    DELETED = Missing(__name__, "DELETED")
+    NEVER_SET = Missing(__name__, "NEVER_SET")
 
     DELETED_copy = copy(DELETED)
     assert DELETED_copy is DELETED
