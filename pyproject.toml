@@ -31,7 +31,7 @@ python = "^3.6.0"
 [tool.poetry.dev-dependencies]
 Sphinx = "^4.2.0"
 black = "^20.8b1"
-ipython = "^7.15.0"
+ipython = "^7.16.3"
 isort = "^5.7.0"
 mypy = "^0.910"
 pylava = "^0.3.0"
